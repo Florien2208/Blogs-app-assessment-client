@@ -30,6 +30,11 @@ This project is a React-based blog application with secure authentication using 
 ## Setup and Installation
 
 1. Clone the repository:
+2. Navigate to the project directory:
+3. Install dependencies:
+4. Start the development server:
+5. Open your browser and visit `http://localhost:3000`
 
+## Project Structure
 
 <img width="959" alt="image" src="https://github.com/user-attachments/assets/c1d46049-8f1d-41a5-9687-dce4b7da7e1c">
