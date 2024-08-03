@@ -1,7 +1,7 @@
 import { useState } from "react";
 import qt from "../assets/download.png";
 import axios from "axios";
-import { Link, Navigate } from "react-router-dom";
+import { Link,  useNavigate } from "react-router-dom";
 import Notiflix from "notiflix";
 import Cookies from "js-cookie";
 const Register = () => {
@@ -11,7 +11,7 @@ const Register = () => {
   const [location, setLocation] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const navigate = useNavigate();
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -34,7 +34,7 @@ const Register = () => {
         password,
       });
       console.log("response",response)
-      if (response.status === 200) {
+      if (response.status === 201) {
           const data = response.data;
           const { token, user } = data;
           
@@ -43,14 +43,15 @@ const Register = () => {
       Cookies.set("accessToken", token);
 
       Cookies.set("User", JSON.stringify(user || {}));
-
-      Navigate("/");
-    } else {
-      Notiflix.Notify.failure("Invalid Email or Password");
-    }
+window.location.reload();
+      navigate("/");
+      
+    } 
+      
+    
     } catch (error) {
       console.error("Error during registration", error);
-     
+     Notiflix.Notify.failure(`${error}`);
     }
   };
 

@@ -1,39 +1,38 @@
-
 import { X } from "lucide-react";
 import usePostForm from "./usePostForm";
 import PropTypes from "prop-types";
 
 const AddPostModal = ({ isOpen, onClose, onAddPost }) => {
-  const { formData, handleChange, resetForm } = usePostForm();
+  const { formData, handleChange } = usePostForm();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.title && formData.content && formData.author) {
       onAddPost(formData);
-      resetForm();
-      onClose();
+    
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">Add New Post</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white p-8 rounded-xl shadow-2xl max-w-2xl w-full">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-gray-800">Add New Post</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
+            aria-label="Close modal"
           >
-            <X size={24} />
+            <X size={28} />
           </button>
         </div>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
             <label
               htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-semibold text-gray-700 mb-1"
             >
               Title
             </label>
@@ -43,14 +42,14 @@ const AddPostModal = ({ isOpen, onClose, onAddPost }) => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               required
             />
           </div>
-          <div className="mb-4">
+          <div>
             <label
               htmlFor="content"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-semibold text-gray-700 mb-1"
             >
               Content
             </label>
@@ -60,14 +59,14 @@ const AddPostModal = ({ isOpen, onClose, onAddPost }) => {
               rows="4"
               value={formData.content}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
               required
             ></textarea>
           </div>
-          <div className="mb-4">
+          <div>
             <label
               htmlFor="author"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-semibold text-gray-700 mb-1"
             >
               Author
             </label>
@@ -77,21 +76,21 @@ const AddPostModal = ({ isOpen, onClose, onAddPost }) => {
               name="author"
               value={formData.author}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               required
             />
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end space-x-4">
             <button
               type="button"
               onClick={onClose}
-              className="mr-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="px-6 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
             >
               Add Post
             </button>
@@ -100,11 +99,12 @@ const AddPostModal = ({ isOpen, onClose, onAddPost }) => {
       </div>
     </div>
   );
-
 };
-  AddPostModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onAddPost: PropTypes.func.isRequired,
-  };
+
+AddPostModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onAddPost: PropTypes.func.isRequired,
+};
+
 export default AddPostModal;
