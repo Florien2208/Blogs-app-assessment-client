@@ -1,15 +1,29 @@
 import { X } from "lucide-react";
 import usePostForm from "./usePostForm";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 const AddPostModal = ({ isOpen, onClose, onAddPost }) => {
   const { formData, handleChange } = usePostForm();
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const user1 = Cookies.get("User");
+    if (user1) {
+      try {
+        const userData = JSON.parse(user1);
+        setUsername(userData.username);
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.title && formData.content && formData.author) {
-      onAddPost(formData);
-    
+    if (formData.title && formData.content && username) {
+      onAddPost({ ...formData, author: username });
     }
   };
 
@@ -74,8 +88,9 @@ const AddPostModal = ({ isOpen, onClose, onAddPost }) => {
               type="text"
               id="author"
               name="author"
-              value={formData.author}
+              value={username}
               onChange={handleChange}
+              readOnly
               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               required
             />

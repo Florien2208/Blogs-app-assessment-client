@@ -1,35 +1,49 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
+import { ChevronDown, User, Mail, MapPin, LogOut } from "lucide-react";
 import photo from "../../assets/download.png";
 
 const Header = () => {
-  const [username, setUsername] = useState("");
+  const [user, setUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
   const token = Cookies.get("accessToken");
 
   useEffect(() => {
-    const user1 = Cookies.get("User");
-    if (user1) {
+    const userData = Cookies.get("User");
+    if (userData) {
       try {
-        const userData = JSON.parse(user1);
-        setUsername(userData.username);
+        setUser(JSON.parse(userData));
       } catch (error) {
         console.error("Error parsing user data:", error);
       }
     }
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleLogout = () => {
     Cookies.remove("accessToken");
     Cookies.remove("User");
-    setUsername("");
+    setUser(null);
     setShowDropdown(false);
-    // Optionally, you can redirect to the home page or login page here
+    window.location.reload()
   };
 
   return (
-    <header className="bg-gray-800 text-white p-4 shadow-md">
+    <header className="fixed top-0 left-0 right-0 bg-gray-800 text-white p-4 shadow-md z-50">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-xl font-bold">
           <Link to="/">
@@ -38,26 +52,46 @@ const Header = () => {
         </div>
         <nav className="space-x-4 flex items-center">
           <Link to="/" className="hover:underline">
-            Home
-          </Link>
-          {/* <Link to="/posts" className="hover:underline">
             Posts
-          </Link> */}
-          {token ? (
-            <div className="relative">
+          </Link>
+
+          {token && user ? (
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="hover:underline focus:outline-none"
+                className="flex items-center space-x-1 hover:underline focus:outline-none"
               >
-                {username}
+                <span>{user.username}</span>
+                <ChevronDown className="w-4 h-4" />
               </button>
               {showDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl z-10">
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-md overflow-hidden shadow-xl z-10">
+                  <div className="p-4 border-b border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700">
+                      {user.username}
+                    </p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </div>
+                  <div className="py-2">
+                    <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                      <User className="w-4 h-4 mr-2" />
+                      <span>{user.username}</span>
+                    </div>
+                    <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                      <Mail className="w-4 h-4 mr-2" />
+                      <span>{user.email}</span>
+                    </div>
+                    <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      <span>{user.location || "N/A"}</span>
+                    </div>
+                  </div>
                   <button
                     onClick={handleLogout}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                    className="block w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-gray-100 items-center"
                   >
-                    Logout
+                    <LogOut className="w-4 h-4 mr-2" />
+                    <span>Logout</span>
                   </button>
                 </div>
               )}
@@ -65,8 +99,7 @@ const Header = () => {
           ) : (
             <>
               <Link to="/login" className="hover:underline">
-                Login or 
-                Register
+                Login or Register
               </Link>
             </>
           )}

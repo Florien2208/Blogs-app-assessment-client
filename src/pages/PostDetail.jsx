@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Edit,
   Trash,
@@ -29,30 +29,35 @@ const [username, setUsername] = useState("");
    const token = Cookies.get("accessToken");
 
 
-    useEffect(() => {
-      fetchPosts();
-    }, []);
+   const fetchPosts = useCallback(async () => {
+     try {
+       setIsLoading(true);
+       const response = await axios.get("/api/posts");
+       const postsWithCommentCounts = await Promise.all(
+         response.data.map(async (post) => {
+           const commentsResponse = await axios.get(
+             `/api/comments/post/${post.id}`
+           );
+           return { ...post, commentCount: commentsResponse.data.length };
+         })
+       );
+       setPosts(postsWithCommentCounts);
+       setIsLoading(false);
 
-    const fetchPosts = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get("/api/posts"); 
-         const postsWithCommentCounts = await Promise.all(
-           response.data.map(async (post) => {
-             const commentsResponse = await axios.get(
-               `/api/comments/post/${post.id}`
-             );
-             return { ...post, commentCount: commentsResponse.data.length };
-           })
+       if (postsWithCommentCounts.length === 0 && !token) {
+         Notiflix.Notify.warning(
+           "No posts available. Please log in to add a post."
          );
-        setPosts(postsWithCommentCounts);
-        console.log("response",response)
-        setIsLoading(false);
-      } catch (err) {
-        setError("Failed to fetch posts");
-        setIsLoading(false);
-      }
-    };
+       }
+     } catch (err) {
+       setError("Failed to fetch posts");
+       setIsLoading(false);
+     }
+   }, [token]);
+
+   useEffect(() => {
+     fetchPosts();
+   }, [fetchPosts]);
 const handlePostSelect = async (post) => {
   try {
     const commentsResponse = await axios.get(`/api/comments/post/${post.id}`);
@@ -292,7 +297,9 @@ if (error) return <div>Error: {error}</div>;
           <Plus size={18} className="mr-2" /> Add New Post
         </button>
       )}
-
+ {posts.length === 0 ? (
+        <div>No posts available</div>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {posts.map((post) => (
           <div
@@ -340,11 +347,11 @@ if (error) return <div>Error: {error}</div>;
             )}
           </div>
         ))}
-      </div>
+      </div>)}
 
       {selectedPost && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 -z-0   bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full max-h-[70vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">
                 <b>Title:</b>
@@ -381,7 +388,7 @@ if (error) return <div>Error: {error}</div>;
             <h3 className="font-semibold mb-2">Comments</h3>
             {selectedPost.comments && selectedPost.comments.length > 0 ? (
               selectedPost.comments.map((comment) => (
-                <div key={comment.id} className="bg-gray-100 p-2 rounded mb-2">
+                <div key={comment.id} className="bg-gray-100 p-2 rounded mb-2 ">
                   {editingComment && editingComment.id === comment.id ? (
                     <>
                       <textarea
