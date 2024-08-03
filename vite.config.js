@@ -1,6 +1,10 @@
 import path from "path";
+import { fileURLToPath } from "url";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [react()],
@@ -15,6 +19,3 @@ export default defineConfig({
     },
   },
 });
-//http://localhost:8080/
-//https://bazafarm-backend-v2-rlnd.onrender.com/
-//http://172.104.56.161:8080/api-docs/
