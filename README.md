@@ -30,3 +30,6 @@ This project is a React-based blog application with secure authentication using 
 ## Setup and Installation
 
 1. Clone the repository:
+
+
+<img width="959" alt="image" src="https://github.com/user-attachments/assets/c1d46049-8f1d-41a5-9687-dce4b7da7e1c">
